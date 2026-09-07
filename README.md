@@ -44,3 +44,90 @@ Mochi reads human touch-and-hold interactions through a digital filtering engine
 
 ## 📐 Material & Fabrication Notes
 The robot chassis was custom-fabricated from flattened *PVC pipe sheets*. Every individual component plate was manually scored, snapped, and super-glued to create a lightweight, sturdy structure designed to support a compact 2-axis pan-tilt mechanical neck articulation mechanism.
+========================================================================================
+                             MOCHI ROBOT MASTER CIRCUIT MATRIX
+========================================================================================
+
+                 [ 0.96" OLED SCREEN ]                 [ HC-SR04 SONIC SENSOR ]
+                  +-----------------+                   +--------------------+
+
+                  | VCC GND SCL SDA |                   | VCC  GND  TRIG  ECHO |
+                  +--+---+---+---+--+                   +--+----+----+----+--+
+
+                     |   |   |   |                         |    |    |    |
+                     |   |   |   +----------+              |    |    |    |
+                     |   |   +--------+     |              |    |    |    |
+                     |   |            |     |              |    |    |    |
+   [3V3 LOGIC] <-----+   |            |     |              |    |    |    |
+   [COMMON GND] <--------+            v     v              v    v    v    v
+                     +--------------+----+----+----------+----+----+----+----+
+
+                     | 3V3  GND      D22  D21         Vin  GND  D14  D27 |
+                     |                                                       |
+                     |         [ ESP32 WROOM DA MICROCONTROLLER ]            |
+                     |                                                       |
+                     |                      GND      D25                     |
+                     +-----------------------+--------+----------------------+
+
+                                             |        |
+                                             |        |  (Safe Low Logic Signal)
+                                             |        v
+                                             |     [ 1kΩ RESISTOR ]
+
+                                             |        |
+                                             |        v
+                                             |     +--+------------------+
+
+                                             |     |  B   (Middle Leg)   |
+                                             |     |                     |
+                                             |     | [ NPN TRANSISTOR ]  |
+                                             |     |  (2N2222 / S8050)   |
+                                             |     |                     |
+                                             |     |  E   (Left Leg)     |
+                                             |     +--+------------------+
+
+                                             |        |
+                         +-------------------+--------+
+                         |
+                         v
+                [ BREADBOARD GND RAIL (-) ] <----------------+---------------+
+                         ^                                   |               |
+
+                         |                                   |               |
+                         |  (Shared Returns)                 |               |
+                         |                                   v               v
+                +--------+--------+                      +---+----+      +---+----+
+
+                |  BATTERY PACK   |                      |  BROWN |      |  BROWN |
+                |  ( - ) BLACK    |                      | (GND)  |      | (GND)  |
+                +-----------------+                      +--------+      +--------+
+
+                |  ( + ) RED  5V  |                      |  RED   |      |  RED   |
+                +--------+--------+                      | (VCC)  |      | (VCC)  |
+                         |                               +---+----+      +---+----+
+
+                         |  (Isolated Power Bus)             |               |
+                         +-----------------------------------+---------------+
+
+                                                             |               |
+                                                             v               v
+                                                        +----+----+     +----+----+
+
+                                                        |  ORANGE |     |  ORANGE |
+                                                        | (SIGNAL)|     | (SIGNAL)|
+                                                        +----+----+     +----+----+
+                                                             ^               ^
+
+                                                             |               |
+                                                             +--[ GPIO 12 ]  |
+                                                                             |
+                                                                [ GPIO 13 ]--+
+
+========================================================================================
+                               TRANSISTOR SPEAKER AUDIO LOOP
+========================================================================================
+
+    [ ESP32 Vin Pin (5V) ] ──────────> [ SPEAKER POSITIVE (+) ]
+                                        [ SPEAKER NEGATIVE (-) ] ──> [ Transistor Collector ]
+                                                                       (Right Leg)
+========================================================================================
